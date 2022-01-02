@@ -57,9 +57,11 @@ void Editor::print_content()
     wclear(window);
     for(int i = 0; i < text.size(); i++)
     {
-        mvwprintw(window, i, 0, text.at(i).c_str());
+        wmove(window, i, 0);
+        wprintw(window, text.at(i).c_str());
         prefresh(window, 0, 0, 0, 0, getmaxy(stdscr), getmaxx(stdscr));
     }
+    wmove(window, y, x);
 }
 
 void Editor::handle_input(int input)
@@ -117,7 +119,7 @@ void Editor::move_up()
 
 void Editor::move_down()
 {
-    if(y + 1 < text.size())
+    if(y + 1 < text.size() - 1)
     {
         if(y >= bottom)
         {
@@ -136,17 +138,40 @@ void Editor::move_down()
 
 void Editor::move_left()
 {
-    if(x > 0)
+    if(x == 0 && y > 0)
+    {
+        x = text.at(y - 1).length();
+        y--;
+    }
+    else if(x > 0)
     {
         x--;
-        wmove(window, y, x);
     }
+    wmove(window, y, x);
 }
 
 void Editor::move_right()
 {
-    if(x < getmaxx(stdscr)
-    && x + 1 <= text.at(y).length())
+    if(x == text.at(y).length())
+    {
+        if(y >= text.size() - 1)
+        {
+            int current_length = text.size();
+            text.resize(++current_length);
+            wresize(window, text.size(), getmaxx(stdscr));
+            text.emplace_back("");
+        }
+        else if(y < text.size() - 1 && y >= bottom)
+        {
+            top++;
+            bottom++;
+        }
+
+        y++;
+        x = 0;
+        wmove(window, y, x);
+    }
+    else
     {
         x++;
         wmove(window, y, x);
