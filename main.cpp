@@ -14,15 +14,13 @@ int main(int argc, char* argv[]) {
 
     editor.print_content();
 
-    bool running = true;
-    while(running)
+    while(editor.get_mode() != quit)
     {
         int input = getch();
-        if (input == 81)
-        {
-            running = false;
-        }
+        editor.print_content();
+        editor.handle_input(input);
     }
+
     endwin();
     return 0;
 }

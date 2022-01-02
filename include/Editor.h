@@ -12,18 +12,23 @@
 
 using namespace std;
 
+enum Mode {normal, insert, quit};
+
 class Editor
 {
 private:
+    Mode mode;
     WINDOW* window;
-    string file_name;
+    string filename;
     vector<string> text;
 
 public:
     explicit Editor(WINDOW* window);
-    Editor(WINDOW* window, const string& file_path);
+    Editor(WINDOW* window, const string& filepath);
 
+    Mode get_mode();
     void print_content();
+    void handle_input(int input);
 };
 
 #endif //SIMPLE_TERMINAL_EDIT_EDITOR_H
