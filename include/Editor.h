@@ -23,9 +23,10 @@ private:
     vector<string> text;
 
 public:
-    explicit Editor(WINDOW* window);
-    Editor(WINDOW* window, const string& filepath);
+    explicit Editor();
+    Editor(string filepath);
 
+    void update();
     Mode get_mode();
     void print_content();
     void handle_input(int input);

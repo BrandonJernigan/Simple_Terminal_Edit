@@ -9,15 +9,18 @@ int main(int argc, char* argv[]) {
     cbreak();
 
     Editor editor = argc > 1
-            ? Editor(stdscr, argv[1])
-            : Editor(stdscr);
+            ? Editor(argv[1])
+            : Editor();
 
-    editor.print_content();
+    wrefresh(stdscr);
+    refresh();
 
     while(editor.get_mode() != quit)
     {
-        int input = getch();
         editor.print_content();
+        editor.update();
+
+        int input = getch();
         editor.handle_input(input);
     }
 

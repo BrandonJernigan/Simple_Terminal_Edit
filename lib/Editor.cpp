@@ -4,17 +4,17 @@
 
 #include "Editor.h"
 
-Editor::Editor(WINDOW* window)
+Editor::Editor()
 {
-    this->window = window;
+    int max_x, max_y;
+    getmaxyx(stdscr, max_y, max_x);
+
+    window = newpad(max_y, max_x);
     filename = "untitled";
 }
 
-Editor::Editor(WINDOW* window, const string& filepath)
+Editor::Editor(string filepath)
 {
-    this->window = window;
-    filename = filepath;
-
     ifstream file(filepath);
     if (file.is_open())
     {
@@ -25,6 +25,14 @@ Editor::Editor(WINDOW* window, const string& filepath)
             text.push_back(line);
         }
     }
+
+    window = newpad(text.size(), getmaxx(stdscr));
+    filename = filepath;
+}
+
+void Editor::update()
+{
+    prefresh(window, 0, 0, 0, 0, getmaxy(stdscr) - 1, getmaxx(stdscr));
 }
 
 Mode Editor::get_mode()
@@ -37,6 +45,7 @@ void Editor::print_content()
     for(int i = 0; i < text.size(); i++)
     {
         mvwprintw(window, i, 0, text.at(i).c_str());
+        prefresh(window, 0, 0, 0, 0, getmaxy(stdscr), getmaxx(stdscr));
     }
 }
 
