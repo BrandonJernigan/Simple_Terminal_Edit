@@ -54,6 +54,7 @@ Mode Editor::get_mode()
 
 void Editor::print_content()
 {
+    wclear(window);
     for(int i = 0; i < text.size(); i++)
     {
         mvwprintw(window, i, 0, text.at(i).c_str());
@@ -172,6 +173,11 @@ void Editor::insert_input(int input)
             mode = normal;
             break;
 
+        case 10:
+        case KEY_ENTER:
+            insert_line();
+            break;
+
         default:
             insert_character((char)input);
             break;
@@ -183,4 +189,14 @@ void Editor::insert_character(char input)
     text.at(y).insert(x, 1, input);
     x++;
     wmove(window, y, x);
+}
+
+void Editor::insert_line()
+{
+    if(x == text.at(y).length())
+    {
+        text.insert(text.begin() + y + 1, "");
+    }
+    x = 0;
+    move_down();
 }
