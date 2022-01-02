@@ -1,7 +1,5 @@
-#include <iostream>
 #include <ncurses.h>
-#include <fstream>
-#include <vector>
+#include "Editor.h"
 
 using namespace std;
 
@@ -10,30 +8,11 @@ int main(int argc, char* argv[]) {
     noecho();
     cbreak();
 
-    printw("Working..?");
+    Editor editor = argc > 1
+            ? Editor(stdscr, argv[1])
+            : Editor(stdscr);
 
-    vector<string> text;
-    if(argc > 1)
-    {
-        ifstream file(argv[1]);
-        if (file.is_open())
-        {
-            while(!file.eof())
-            {
-                string line;
-                getline(file, line);
-                text.push_back(line);
-            }
-        }
-    }
-
-    if(!text.empty())
-    {
-        for(int i = 0; i < text.size(); i++)
-        {
-            mvprintw(i, 0, text.at(i).c_str());
-        }
-    }
+    editor.print_content();
 
     bool running = true;
     while(running)
