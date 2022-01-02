@@ -7,6 +7,7 @@ int main(int argc, char* argv[]) {
     initscr();
     noecho();
     cbreak();
+    keypad(stdscr, TRUE);
 
     Editor editor = argc > 1
             ? Editor(argv[1])

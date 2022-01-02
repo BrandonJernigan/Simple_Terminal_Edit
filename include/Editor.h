@@ -17,10 +17,19 @@ enum Mode {normal, insert, quit};
 class Editor
 {
 private:
+    int x, y;
     Mode mode;
     WINDOW* window;
     string filename;
     vector<string> text;
+
+    void move_up();
+    void move_down();
+    void move_left();
+    void move_right();
+
+    void normal_input(int input);
+    void insert_input(int input);
 
 public:
     explicit Editor();
