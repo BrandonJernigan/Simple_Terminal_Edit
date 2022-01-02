@@ -166,8 +166,21 @@ void Editor::normal_input(int input)
 
 void Editor::insert_input(int input)
 {
-    if(input == 27)
+    switch(input)
     {
-        mode = normal;
+        case 27:
+            mode = normal;
+            break;
+
+        default:
+            insert_character((char)input);
+            break;
     }
+}
+
+void Editor::insert_character(char input)
+{
+    text.at(y).insert(x, 1, input);
+    x++;
+    wmove(window, y, x);
 }
