@@ -2,6 +2,13 @@
 #include <ncurses.h>
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    initscr();
+    noecho();
+    cbreak();
+
+    printw("Working..?");
+
+    getch();
+    endwin();
     return 0;
 }
