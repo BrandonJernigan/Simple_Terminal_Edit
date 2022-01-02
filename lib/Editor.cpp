@@ -6,6 +6,8 @@
 
 Editor::Editor()
 {
+    text.emplace_back("");
+
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
 
@@ -92,15 +94,26 @@ void Editor::move_up()
     if(y > 0)
     {
         y--;
-        wmove(window, y, x);
     }
+    if(x > text.at(y).length())
+    {
+        x = text.at(y).length();
+    }
+    wmove(window, y, x);
 }
 
 void Editor::move_down()
 {
-    if(y < (getmaxy(stdscr) - 1))
+    if(y + 1 < text.size())
     {
-        y++;
+        if(y < (getmaxy(stdscr) - 1))
+        {
+            y++;
+        }
+        if(x > text.at(y).length())
+        {
+            x = text.at(y).length();
+        }
         wmove(window, y, x);
     }
 }
@@ -116,7 +129,8 @@ void Editor::move_left()
 
 void Editor::move_right()
 {
-    if(x < getmaxx(stdscr))
+    if(x < getmaxx(stdscr)
+    && x + 1 <= text.at(y).length())
     {
         x++;
         wmove(window, y, x);
