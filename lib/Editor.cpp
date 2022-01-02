@@ -178,6 +178,11 @@ void Editor::insert_input(int input)
             insert_line();
             break;
 
+        case 127:
+        case KEY_BACKSPACE:
+            delete_character();
+            break;
+
         default:
             insert_character((char)input);
             break;
@@ -207,4 +212,20 @@ void Editor::insert_line()
 
     x = 0;
     move_down();
+}
+
+void Editor::delete_character()
+{
+    if(x == 0 && y > 0)
+    {
+        x = text.at(y - 1).length();
+        text.at(y - 1) += text.at(y);
+        text.erase(text.begin() + y);
+        move_up();
+    }
+    else if(x > 0)
+    {
+        text.at(y).erase(--x, 1);
+        wmove(window, y, x);
+    }
 }

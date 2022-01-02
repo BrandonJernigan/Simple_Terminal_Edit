@@ -33,6 +33,7 @@ private:
     void insert_input(int input);
     void insert_character(char input);
     void insert_line();
+    void delete_character();
 
 public:
     explicit Editor();
