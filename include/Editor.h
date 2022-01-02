@@ -20,6 +20,7 @@ private:
     int x, y;
     Mode mode;
     WINDOW* window;
+    int top, bottom;
     string filename;
     vector<string> text;
 

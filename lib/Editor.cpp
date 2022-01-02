@@ -12,6 +12,9 @@ Editor::Editor()
     getmaxyx(stdscr, max_y, max_x);
 
     x = y = 0;
+    top = 0;
+    bottom = max_y - 1;
+
     mode = normal;
     filename = "untitled";
     window = newpad(max_y, max_x);
@@ -31,6 +34,9 @@ Editor::Editor(string filepath)
     }
 
     x = y = 0;
+    top = 0;
+    bottom = getmaxy(stdscr) - 1;
+
     mode = normal;
     filename = filepath;
     window = newpad(text.size(), getmaxx(stdscr));
@@ -38,7 +44,7 @@ Editor::Editor(string filepath)
 
 void Editor::update()
 {
-    prefresh(window, 0, 0, 0, 0, getmaxy(stdscr) - 1, getmaxx(stdscr));
+    prefresh(window, top, 0, 0, 0, getmaxy(stdscr) - 1, getmaxx(stdscr));
 }
 
 Mode Editor::get_mode()
@@ -93,8 +99,14 @@ void Editor::move_up()
 {
     if(y > 0)
     {
+        if(y <= top)
+        {
+            top--;
+            bottom--;
+        }
         y--;
     }
+
     if(x > text.at(y).length())
     {
         x = text.at(y).length();
@@ -106,10 +118,13 @@ void Editor::move_down()
 {
     if(y + 1 < text.size())
     {
-        if(y < (getmaxy(stdscr) - 1))
+        if(y >= bottom)
         {
-            y++;
+            top++;
+            bottom++;
         }
+        y++;
+
         if(x > text.at(y).length())
         {
             x = text.at(y).length();
