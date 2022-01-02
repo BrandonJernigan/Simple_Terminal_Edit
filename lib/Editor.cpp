@@ -193,10 +193,18 @@ void Editor::insert_character(char input)
 
 void Editor::insert_line()
 {
-    if(x == text.at(y).length())
+    auto index = text.begin() + y + 1;
+    if(x < text.at(y).length())
     {
-        text.insert(text.begin() + y + 1, "");
+        auto substr = text.at(y).substr(x, text.at(y).length() - x);
+        text.insert(index, substr);
+        text.at(y).erase(x, text.at(y).length() - x);
     }
+    else
+    {
+        text.insert(index, "");
+    }
+
     x = 0;
     move_down();
 }
