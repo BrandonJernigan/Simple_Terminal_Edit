@@ -34,6 +34,7 @@ private:
     void insert_character(char input);
     void insert_line();
     void delete_character();
+    void handle_delete();
 
 public:
     explicit Editor();

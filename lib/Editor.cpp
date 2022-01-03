@@ -204,6 +204,10 @@ void Editor::insert_input(int input)
             delete_character();
             break;
 
+        case KEY_DC:
+            handle_delete();
+            break;
+
         default:
             insert_character((char)input);
             break;
@@ -253,5 +257,19 @@ void Editor::delete_character()
     {
         text.at(y).erase(--x, 1);
         wmove(window, y, x);
+    }
+}
+
+void Editor::handle_delete()
+{
+    if(x == text.at(y).length()
+    && y + 1 < text.size() - 1)
+    {
+        text.at(y) += text.at(y + 1);
+        text.erase(text.begin() + y + 1);
+    }
+    else
+    {
+        text.at(y).erase(x, 1);
     }
 }
