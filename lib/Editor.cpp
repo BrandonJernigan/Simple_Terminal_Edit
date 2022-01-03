@@ -119,7 +119,7 @@ void Editor::move_up()
 
 void Editor::move_down()
 {
-    if(y + 1 < text.size() - 1)
+    if(y + 1 < text.size())
     {
         if(y >= bottom)
         {
@@ -152,29 +152,25 @@ void Editor::move_left()
 
 void Editor::move_right()
 {
-    if(x == text.at(y).length())
+    if(y < text.size())
     {
-        if(y >= text.size() - 1)
+        if(x == text.at(y).length())
         {
-            int current_length = text.size();
-            text.resize(++current_length);
-            wresize(window, text.size(), getmaxx(stdscr));
-            text.emplace_back("");
-        }
-        else if(y < text.size() - 1 && y >= bottom)
-        {
-            top++;
-            bottom++;
-        }
+            if(y >= bottom && y < text.size() - 1)
+            {
+                top++;
+                bottom++;
+            }
 
-        y++;
-        x = 0;
-        wmove(window, y, x);
-    }
-    else
-    {
-        x++;
-        wmove(window, y, x);
+            y++;
+            x = 0;
+            wmove(window, y, x);
+        }
+        else
+        {
+            x++;
+            wmove(window, y, x);
+        }
     }
 }
 
