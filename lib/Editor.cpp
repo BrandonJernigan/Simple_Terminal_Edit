@@ -191,14 +191,17 @@ void Editor::move_right()
 void Editor::normal_input(int input)
 {
     switch(input) {
+        /* Shift-Q */
         case 81:
             mode = quit;
             break;
 
+        /* Shift-I */
         case 73:
             mode = insert;
             break;
 
+        /* Shift-S */
         case 83:
             file_handler->save_file();
             break;
@@ -212,22 +215,34 @@ void Editor::insert_input(int input)
 {
     switch(input)
     {
+        /* Escape key */
         case 27:
             mode = normal;
             break;
 
+        /* Enter key */
         case 10:
         case KEY_ENTER:
             handle_enter_key();
             break;
 
+        /* Backspace key */
         case 127:
         case KEY_BACKSPACE:
             handle_backspace_key();
             break;
 
+        /* Delete key */
         case KEY_DC:
             handle_delete_key();
+            break;
+
+        case KEY_BTAB:
+        case KEY_CTAB:
+        case KEY_CATAB:
+        case KEY_STAB:
+        case 9:
+            handle_tab_key();
             break;
 
         default:
@@ -295,6 +310,13 @@ void Editor::handle_delete_key()
     {
         file_handler->delete_characters(y, x, 1);
     }
+}
+
+void Editor::handle_tab_key()
+{
+    file_handler->text.at(y).insert(x, 4, ' ');
+    x += 4;
+    wmove(window, y, x);
 }
 
 void Editor::handle_default_key(char input)

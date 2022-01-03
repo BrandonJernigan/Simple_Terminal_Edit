@@ -34,6 +34,7 @@ private:
     void handle_enter_key();                    // Handlers for specific keys
     void handle_backspace_key();
     void handle_delete_key();
+    void handle_tab_key();
     void handle_default_key(char input);        // Handler for general key press, not already covered
 
 public:

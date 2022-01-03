@@ -25,6 +25,7 @@ public:
     __wrap_iter<string *> get_substring(int length);                        // Return substrings
     string get_substring(int row, int position, int length);
 
+    void remove_tabs(string line);                                          // Remove tabs and replace with 4 spaces
     void insert_character(int row, int col, int input);                     // Insert operations
     void insert_line(__wrap_iter<const string *> position, string input);
 

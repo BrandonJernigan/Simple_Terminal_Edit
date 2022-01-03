@@ -19,6 +19,7 @@ void File_Handler::open_file()
         {
             string line;
             getline(file, line);
+            remove_tabs(line);
             text.push_back(line);
         }
     }
@@ -44,6 +45,15 @@ __wrap_iter<string *> File_Handler::get_substring(int length)
 string File_Handler::get_substring(int row, int position, int length)
 {
     return text.at(row).substr(position, length);
+}
+
+void File_Handler::remove_tabs(string line)
+{
+    int tab = line.find("\t");
+    if(tab != line.npos)
+    {
+        remove_tabs(line.replace(tab, 1, "    "));
+    }
 }
 
 void File_Handler::insert_character(int row, int col, int input)
