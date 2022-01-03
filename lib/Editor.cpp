@@ -119,7 +119,7 @@ void Editor::move_up()
 
 void Editor::move_down()
 {
-    if(y + 1 < text.size())
+    if(y + 1 < text.size() - 1)
     {
         if(y >= bottom)
         {
@@ -152,11 +152,11 @@ void Editor::move_left()
 
 void Editor::move_right()
 {
-    if(y < text.size())
+    if(y < text.size() - 1)
     {
-        if(x == text.at(y).length())
+        if(x == text.at(y).length() && y + 1 < text.size() - 1)
         {
-            if(y >= bottom && y < text.size() - 1)
+            if(y >= bottom)
             {
                 top++;
                 bottom++;
@@ -219,20 +219,23 @@ void Editor::insert_character(char input)
 
 void Editor::insert_line()
 {
-    auto index = text.begin() + y + 1;
-    if(x < text.at(y).length())
+    if(y + 1 < text.size() - 1)
     {
-        auto substr = text.at(y).substr(x, text.at(y).length() - x);
-        text.insert(index, substr);
-        text.at(y).erase(x, text.at(y).length() - x);
-    }
-    else
-    {
-        text.insert(index, "");
-    }
+        auto index = text.begin() + y + 1;
+        if(x < text.at(y).length())
+        {
+            auto substr = text.at(y).substr(x, text.at(y).length() - x);
+            text.insert(index, substr);
+            text.at(y).erase(x, text.at(y).length() - x);
+        }
+        else
+        {
+            text.insert(index, "");
+        }
 
-    x = 0;
-    move_down();
+        x = 0;
+        move_down();
+    }
 }
 
 void Editor::delete_character()
