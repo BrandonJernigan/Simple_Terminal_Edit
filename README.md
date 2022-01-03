@@ -2,7 +2,7 @@
 <h6 align="center">Written in C++ using ncurses</h6>
 
 <p align="center">
-  <img width="543" alt="asteroids-logo" src="https://user-images.githubusercontent.com/81219815/146649608-eb616daf-bb2c-4589-8cab-2718d94c022d.png">
+  <img width="300" alt="logo" src="https://user-images.githubusercontent.com/81219815/147907184-458bcbff-6510-4540-a410-235a01d896e2.png">
 </p>
 
 
