@@ -12,7 +12,6 @@ It is simple, with the intention of being an easy to expand project.
 
 
 #### * Still under development *
-- Currently working to add support for the tab key. (Backspace, Enter, and Delete do work currently)
 - Future addition of top info bar.
 - Future addition of custom syntax highlighter for C++.
 
