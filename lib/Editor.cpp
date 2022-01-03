@@ -4,21 +4,32 @@
 
 #include "Editor.h"
 
-#include <utility>
-
 Editor::Editor()
 {
     setup_editor("untitled");
+
+    /* Initialize text vector with data */
     file_handler->text.emplace_back("");
     file_handler->text.emplace_back("");
+
+    /* Create a pad window to allow for height beyond the standard screen height */
     window = newpad(getmaxy(stdscr), getmaxx(stdscr));
 }
 
 Editor::Editor(string filepath)
 {
     setup_editor(filepath);
+
+    /* Set up file handler with filepath provided */
     file_handler->open_file();
+
+    /* Create a pad window to allow for height beyond the standard screen height */
     window = newpad(file_handler->text.size(), getmaxx(stdscr));
+}
+
+Editor::~Editor()
+{
+    delwin(window);
 }
 
 void Editor::setup_editor(string filepath)
@@ -34,6 +45,7 @@ void Editor::setup_editor(string filepath)
 
 void Editor::update()
 {
+    /* Call to p-refresh since the window is a pad */
     prefresh(window, top, 0, 0, 0, getmaxy(stdscr) - 1, getmaxx(stdscr));
 }
 
@@ -51,6 +63,8 @@ void Editor::print_content()
         wprintw(window, file_handler->text.at(i).c_str());
         prefresh(window, 0, 0, 0, 0, getmaxy(stdscr), getmaxx(stdscr));
     }
+
+    /* Move the cursor back to x and y of previous state */
     wmove(window, y, x);
 }
 
@@ -100,6 +114,7 @@ void Editor::move_up()
         y--;
     }
 
+    /* Move x position to the end of each line */
     if(x > file_handler->text.at(y).length())
     {
         x = file_handler->text.at(y).length();
@@ -109,8 +124,10 @@ void Editor::move_up()
 
 void Editor::move_down()
 {
+    /* Ensure the next line is available */
     if(y + 1 < file_handler->text.size() - 1)
     {
+        /* Window scroll */
         if(y >= bottom)
         {
             top++;
@@ -118,6 +135,7 @@ void Editor::move_down()
         }
         y++;
 
+        /* Move x position to the end of each line */
         if(x > file_handler->text.at(y).length())
         {
             x = file_handler->text.at(y).length();
@@ -128,6 +146,8 @@ void Editor::move_down()
 
 void Editor::move_left()
 {
+    /* Move up a line if at left most point,
+     * with an available line above */
     if(x == 0 && y > 0)
     {
         x = file_handler->text.at(y - 1).length();
@@ -144,9 +164,12 @@ void Editor::move_right()
 {
     if(y < file_handler->text.size() - 1)
     {
+        /* Make sure line below is available, and if so
+        * move down one line */
         if(x == file_handler->text.at(y).length()
         && y + 1 < file_handler->text.size() - 1)
         {
+            /* Window scroll */
             if(y >= bottom)
             {
                 top++;
@@ -215,11 +238,13 @@ void Editor::insert_input(int input)
 
 void Editor::handle_enter_key()
 {
+    /* Resize the window if at the last line */
     if(y + 1 >= file_handler->text.size() - 1)
     {
         wresize(window, file_handler->text.size() + 1, getmaxx(stdscr));
     }
 
+    /* Split current line at x if not at the end of the line */
     auto index = file_handler->get_substring(y + 1);
     if(x < file_handler->text.at(y).length())
     {
@@ -239,6 +264,7 @@ void Editor::handle_enter_key()
 
 void Editor::handle_backspace_key()
 {
+    /* Go up one line if at the left most point */
     if(x == 0 && y > 0)
     {
         x = file_handler->text.at(y - 1).length();
@@ -257,6 +283,7 @@ void Editor::handle_backspace_key()
 
 void Editor::handle_delete_key()
 {
+    /* Bring line up if at end of line */
     if(x == file_handler->text.at(y).length()
        && y + 1 < file_handler->text.size() - 1)
     {
