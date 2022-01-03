@@ -4,42 +4,32 @@
 
 #include "Editor.h"
 
+#include <utility>
+
 Editor::Editor()
 {
-    text.emplace_back("");
-
-    int max_x, max_y;
-    getmaxyx(stdscr, max_y, max_x);
-
-    x = y = 0;
-    top = 0;
-    bottom = max_y - 1;
-
-    mode = normal;
-    filename = "untitled";
-    window = newpad(max_y, max_x);
+    setup_editor("untitled");
+    file_handler->text.emplace_back("");
+    file_handler->text.emplace_back("");
+    window = newpad(getmaxy(stdscr), getmaxx(stdscr));
 }
 
 Editor::Editor(string filepath)
 {
-    ifstream file(filepath);
-    if (file.is_open())
-    {
-        while(!file.eof())
-        {
-            string line;
-            getline(file, line);
-            text.push_back(line);
-        }
-    }
+    setup_editor(filepath);
+    file_handler->open_file();
+    window = newpad(file_handler->text.size(), getmaxx(stdscr));
+}
+
+void Editor::setup_editor(string filepath)
+{
+    mode = normal;
 
     x = y = 0;
     top = 0;
     bottom = getmaxy(stdscr) - 1;
 
-    mode = normal;
-    filename = filepath;
-    window = newpad(text.size(), getmaxx(stdscr));
+    file_handler = new File_Handler(filepath);
 }
 
 void Editor::update()
@@ -55,10 +45,10 @@ Mode Editor::get_mode()
 void Editor::print_content()
 {
     wclear(window);
-    for(int i = 0; i < text.size(); i++)
+    for(int i = 0; i < file_handler->text.size(); i++)
     {
         wmove(window, i, 0);
-        wprintw(window, text.at(i).c_str());
+        wprintw(window, file_handler->text.at(i).c_str());
         prefresh(window, 0, 0, 0, 0, getmaxy(stdscr), getmaxx(stdscr));
     }
     wmove(window, y, x);
@@ -110,16 +100,16 @@ void Editor::move_up()
         y--;
     }
 
-    if(x > text.at(y).length())
+    if(x > file_handler->text.at(y).length())
     {
-        x = text.at(y).length();
+        x = file_handler->text.at(y).length();
     }
     wmove(window, y, x);
 }
 
 void Editor::move_down()
 {
-    if(y + 1 < text.size() - 1)
+    if(y + 1 < file_handler->text.size() - 1)
     {
         if(y >= bottom)
         {
@@ -128,9 +118,9 @@ void Editor::move_down()
         }
         y++;
 
-        if(x > text.at(y).length())
+        if(x > file_handler->text.at(y).length())
         {
-            x = text.at(y).length();
+            x = file_handler->text.at(y).length();
         }
         wmove(window, y, x);
     }
@@ -140,7 +130,7 @@ void Editor::move_left()
 {
     if(x == 0 && y > 0)
     {
-        x = text.at(y - 1).length();
+        x = file_handler->text.at(y - 1).length();
         y--;
     }
     else if(x > 0)
@@ -152,9 +142,10 @@ void Editor::move_left()
 
 void Editor::move_right()
 {
-    if(y < text.size() - 1)
+    if(y < file_handler->text.size() - 1)
     {
-        if(x == text.at(y).length() && y + 1 < text.size() - 1)
+        if(x == file_handler->text.at(y).length()
+        && y + 1 < file_handler->text.size() - 1)
         {
             if(y >= bottom)
             {
@@ -186,7 +177,7 @@ void Editor::normal_input(int input)
             break;
 
         case 83:
-            save_file();
+            file_handler->save_file();
             break;
 
         default:
@@ -204,92 +195,84 @@ void Editor::insert_input(int input)
 
         case 10:
         case KEY_ENTER:
-            insert_line();
+            handle_enter_key();
             break;
 
         case 127:
         case KEY_BACKSPACE:
-            delete_character();
+            handle_backspace_key();
             break;
 
         case KEY_DC:
-            handle_delete();
+            handle_delete_key();
             break;
 
         default:
-            insert_character((char)input);
+            handle_default_key((char)input);
             break;
     }
 }
 
-void Editor::insert_character(char input)
+void Editor::handle_enter_key()
 {
-    text.at(y).insert(x, 1, input);
-    x++;
-    wmove(window, y, x);
-}
-
-void Editor::insert_line()
-{
-    if(y + 1 >= text.size() - 1)
+    if(y + 1 >= file_handler->text.size() - 1)
     {
-        wresize(window, text.size() + 1, getmaxx(stdscr));
+        wresize(window, file_handler->text.size() + 1, getmaxx(stdscr));
     }
 
-    auto index = text.begin() + y + 1;
-    if(x < text.at(y).length())
+    auto index = file_handler->get_substring(y + 1);
+    if(x < file_handler->text.at(y).length())
     {
-        auto substr = text.at(y).substr(x, text.at(y).length() - x);
-        text.insert(index, substr);
-        text.at(y).erase(x, text.at(y).length() - x);
+        int substr_length = file_handler->text.at(y).length() - x;
+        auto substr = file_handler->get_substring(y, x, substr_length);
+        file_handler->insert_line(index, substr);
+        file_handler->delete_characters(y, x, substr_length);
     }
     else
     {
-        text.insert(index, "");
+        file_handler->insert_line(index, "");
     }
 
     x = 0;
     move_down();
 }
 
-void Editor::delete_character()
+void Editor::handle_backspace_key()
 {
     if(x == 0 && y > 0)
     {
-        x = text.at(y - 1).length();
-        text.at(y - 1) += text.at(y);
-        text.erase(text.begin() + y);
+        x = file_handler->text.at(y - 1).length();
+        file_handler->text.at(y - 1) += file_handler->text.at(y);
+
+        auto substr_length = file_handler->get_substring(y);
+        file_handler->delete_line(substr_length);
         move_up();
     }
     else if(x > 0)
     {
-        text.at(y).erase(--x, 1);
+        file_handler->delete_characters(y, --x, 1);
         wmove(window, y, x);
     }
 }
 
-void Editor::handle_delete()
+void Editor::handle_delete_key()
 {
-    if(x == text.at(y).length()
-    && y + 1 < text.size() - 1)
+    if(x == file_handler->text.at(y).length()
+       && y + 1 < file_handler->text.size() - 1)
     {
-        text.at(y) += text.at(y + 1);
-        text.erase(text.begin() + y + 1);
+        file_handler->text.at(y) += file_handler->text.at(y + 1);
+        auto substr_length = file_handler->get_substring(y + 1);
+        file_handler->delete_line(substr_length);
     }
     else
     {
-        text.at(y).erase(x, 1);
+        file_handler->delete_characters(y, x, 1);
     }
 }
 
-void Editor::save_file()
+void Editor::handle_default_key(char input)
 {
-    ofstream file (filename.c_str());
-    if(file.is_open()) {
-        for (auto & line : text)
-        {
-            file << line << endl;
-        }
-    }
-    file.close();
+    file_handler->insert_character(y, x, input);
+    x++;
+    wmove(window, y, x);
 }

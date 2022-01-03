@@ -6,9 +6,7 @@
 #define SIMPLE_TERMINAL_EDIT_EDITOR_H
 
 #include <ncurses.h>
-#include <string>
-#include <vector>
-#include <fstream>
+#include "File_Handler.h"
 
 using namespace std;
 
@@ -21,8 +19,9 @@ private:
     Mode mode;
     WINDOW* window;
     int top, bottom;
-    string filename;
-    vector<string> text;
+    File_Handler* file_handler;
+
+    void setup_editor(string filename);
 
     void move_up();
     void move_down();
@@ -31,11 +30,10 @@ private:
 
     void normal_input(int input);
     void insert_input(int input);
-    void insert_character(char input);
-    void insert_line();
-    void delete_character();
-    void handle_delete();
-    void save_file();
+    void handle_enter_key();
+    void handle_backspace_key();
+    void handle_delete_key();
+    void handle_default_key(char input);
 
 public:
     explicit Editor();
