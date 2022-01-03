@@ -176,13 +176,21 @@ void Editor::move_right()
 
 void Editor::normal_input(int input)
 {
-    if(input == 81)
-    {
-        mode = quit;
-    }
-    else if(input == 73)
-    {
-        mode = insert;
+    switch(input) {
+        case 81:
+            mode = quit;
+            break;
+
+        case 73:
+            mode = insert;
+            break;
+
+        case 83:
+            save_file();
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -272,4 +280,16 @@ void Editor::handle_delete()
     {
         text.at(y).erase(x, 1);
     }
+}
+
+void Editor::save_file()
+{
+    ofstream file (filename.c_str());
+    if(file.is_open()) {
+        for (auto & line : text)
+        {
+            file << line << endl;
+        }
+    }
+    file.close();
 }
