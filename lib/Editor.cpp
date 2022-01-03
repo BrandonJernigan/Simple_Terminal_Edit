@@ -219,23 +219,25 @@ void Editor::insert_character(char input)
 
 void Editor::insert_line()
 {
-    if(y + 1 < text.size() - 1)
+    if(y + 1 >= text.size() - 1)
     {
-        auto index = text.begin() + y + 1;
-        if(x < text.at(y).length())
-        {
-            auto substr = text.at(y).substr(x, text.at(y).length() - x);
-            text.insert(index, substr);
-            text.at(y).erase(x, text.at(y).length() - x);
-        }
-        else
-        {
-            text.insert(index, "");
-        }
-
-        x = 0;
-        move_down();
+        wresize(window, text.size() + 1, getmaxx(stdscr));
     }
+
+    auto index = text.begin() + y + 1;
+    if(x < text.at(y).length())
+    {
+        auto substr = text.at(y).substr(x, text.at(y).length() - x);
+        text.insert(index, substr);
+        text.at(y).erase(x, text.at(y).length() - x);
+    }
+    else
+    {
+        text.insert(index, "");
+    }
+
+    x = 0;
+    move_down();
 }
 
 void Editor::delete_character()
