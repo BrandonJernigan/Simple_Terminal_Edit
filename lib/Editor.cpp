@@ -38,7 +38,7 @@ void Editor::setup_editor(string filepath)
 
     x = y = 0;
     top = 0;
-    bottom = getmaxy(stdscr) - 1;
+    bottom = getmaxy(stdscr) - 2;
 
     file_handler = new File_Handler(filepath);
 }
@@ -46,12 +46,27 @@ void Editor::setup_editor(string filepath)
 void Editor::update()
 {
     /* Call to p-refresh since the window is a pad */
-    prefresh(window, top, 0, 0, 0, getmaxy(stdscr) - 1, getmaxx(stdscr));
+    prefresh(window, top, 0, 1, 0, getmaxy(stdscr) - 1, getmaxx(stdscr));
+}
+
+string Editor::get_filename()
+{
+    return file_handler->filename;
 }
 
 Mode Editor::get_mode()
 {
     return mode;
+}
+
+string Editor::get_mode_info()
+{
+    return mode == insert ? "insert" : "normal";
+}
+
+long Editor::get_lines()
+{
+    return (long)file_handler->text.size();
 }
 
 void Editor::print_content()
@@ -61,7 +76,7 @@ void Editor::print_content()
     {
         wmove(window, i, 0);
         wprintw(window, file_handler->text.at(i).c_str());
-        prefresh(window, 0, 0, 0, 0, getmaxy(stdscr), getmaxx(stdscr));
+        prefresh(window, 0, 0, 1, 0, getmaxy(stdscr), getmaxx(stdscr));
     }
 
     /* Move the cursor back to x and y of previous state */

@@ -43,7 +43,10 @@ public:
     ~Editor();
 
     void update();
+    string get_filename();                      // Return the filename
     Mode get_mode();                            // Return the current mode of editor
+    string get_mode_info();                     // Return the string representation of the mode
+    long get_lines();                           // Return the number of lines in the file
     void print_content();                       // Display text
     void handle_input(int input);               // Public call to handle keypress
 };
