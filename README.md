@@ -12,7 +12,6 @@ It is simple, with the intention of being an easy to expand project.
 
 
 #### * Still under development *
-- Future addition of top info bar.
 - Future addition of custom syntax highlighter for C++.
 
 
