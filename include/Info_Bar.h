@@ -13,7 +13,7 @@ inline void print_info_bar(WINDOW* window, string filename, long line_count, str
     wattron(window, A_REVERSE);                                     // Reverse background and foreground to make bar stand out
 
     string document_info = "document: " + filename;                 // Format the document name
-    string line_info = "lines: " + to_string(line_count);       // Format the line count
+    string line_info = "lines: " + to_string(line_count);           // Format the line count
     string mode_info = "mode: " + mode;                             // Format the current mode
 
     wprintw(window, document_info.c_str());                         // Print the editor information
