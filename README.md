@@ -10,11 +10,6 @@
 This application is a simple exploration of creating a terminal based text editor. It aims to have a similarity to VIm and/or Nano. 
 It is simple, with the intention of being an easy to expand project.
 
-
-#### * Still under development *
-- Future addition of custom syntax highlighter for C++.
-
-
 #### Application Specifications
 - C++ version 17
 - ncurses version 6.3
